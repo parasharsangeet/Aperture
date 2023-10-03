@@ -6,9 +6,10 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import javax.security.auth.login.LoginException;
-
 import dev.aperture.commands.Ping;
+import dev.aperture.commands.UserInfo;
 import io.github.cdimascio.dotenv.Dotenv;
 
 public class Main
@@ -19,7 +20,8 @@ public class Main
         String token = dotenv.get("BOT_TOKEN");
 
         JDA jda = JDABuilder.createDefault(token).enableIntents(GatewayIntent.GUILD_MEMBERS)
-                .enableIntents(GatewayIntent.DIRECT_MESSAGES).setActivity(Activity.playing("Aperture")).build();
+                .enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES)
+                .setMemberCachePolicy(MemberCachePolicy.ALL).setActivity(Activity.playing("Aperture")).build();
 
         jda.updateCommands()
                 .addCommands(Commands.slash("ping", "Calculates the ping of the bot."),
@@ -31,5 +33,6 @@ public class Main
                 .queue();
 
         jda.addEventListener(new Ping());
+        jda.addEventListener(new UserInfo());
     }
 }
