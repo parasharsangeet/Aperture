@@ -1,4 +1,4 @@
-package dev.aperture.commands;
+package dev.aperture.commands.info;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;

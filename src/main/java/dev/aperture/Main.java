@@ -7,9 +7,11 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import dev.aperture.commands.games.TicTacToe;
+import dev.aperture.commands.info.ServerInfo;
+import dev.aperture.commands.info.UserInfo;
+import dev.aperture.commands.misc.Ping;
 import javax.security.auth.login.LoginException;
-import dev.aperture.commands.Ping;
-import dev.aperture.commands.UserInfo;
 import io.github.cdimascio.dotenv.Dotenv;
 
 public class Main
@@ -34,5 +36,7 @@ public class Main
 
         jda.addEventListener(new Ping());
         jda.addEventListener(new UserInfo());
+        jda.addEventListener(new ServerInfo());
+        jda.addEventListener(new TicTacToe());
     }
 }
