@@ -17,6 +17,12 @@ public class TicTacToe extends ListenerAdapter
             User target = event.getOption("user").getAsUser();
             User author = event.getUser();
 
+            if (target.isBot())
+            {
+                event.reply("You cannot play against bots.").queue();
+                return;
+            }
+
             this.game = new Game(target, author, event.getInteraction());
             this.game.run();
         }
