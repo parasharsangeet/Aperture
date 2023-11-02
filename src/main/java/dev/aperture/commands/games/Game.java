@@ -1,6 +1,7 @@
 package dev.aperture.commands.games;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
@@ -9,6 +10,8 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import dev.aperture.Constants;
 
 public class Game
@@ -32,7 +35,6 @@ public class Game
         this._winner = ' ';
 
         // Fill the board with empty data.
-
         this._board = new char[9];
         for (int i = 0; i < 9; i++)
         {
@@ -73,12 +75,26 @@ public class Game
             if (!(interaction.getUser().getId().equals(this._player1.user.getId())
                     || interaction.getUser().getId().equals(this._player2.user.getId())))
             {
-                event.reply("Get lost idiot. You are not even playing.").setEphemeral(true).queue();
+                Message msg = this._interaction.getChannel()
+                        .sendMessage("Get lost " + interaction.getUser().getAsMention() + " You are not even playing.")
+                        .complete();
+
+                msg.delete().queueAfter(2, TimeUnit.SECONDS);
                 return;
             }
 
-            this._interaction.getHook().editOriginal("Game has been ended").setActionRow().setEmbeds().queue();
-            ;
+            this._interaction.getHook().deleteOriginal().queue();
+            this._interaction.getMessageChannel().sendMessage("Game ended.").queue();
+            return;
+        }
+
+        // Check if the move is made by current user
+        if (!interaction.getUser().getId().equals(this._currentPlayer.user.getId()))
+        {
+            Message msg = interaction.getChannel()
+                    .sendMessage("Its not your turn. " + interaction.getUser().getAsMention()).complete();
+
+            msg.delete().queueAfter(2, TimeUnit.SECONDS);
             return;
         }
 
@@ -87,9 +103,11 @@ public class Game
         // Check if the move is valid
         if (!this.isMoveValid(position))
         {
-            this._interaction.reply("Your move is invalid! This cell is already occupied. Try with another move.")
-                    .setEphemeral(true).queue();
+            Message msg = this._interaction.getChannel()
+                    .sendMessage("Your move is invalid! This cell is already occupied. Try with another move.")
+                    .complete();
 
+            msg.delete().queueAfter(2, TimeUnit.SECONDS);
             return;
         }
 
@@ -164,9 +182,7 @@ public class Game
 
             if (this.validEquals(v1, v2) && this.validEquals(v2, v3))
                 this._winner = v1;
-
         }
-        ;
 
         // Check vertically.
         for (int column = 0; column < 3; column++)
@@ -177,9 +193,7 @@ public class Game
 
             if (this.validEquals(v1, v2) && this.validEquals(v2, v3))
                 this._winner = v1;
-
         }
-        ;
 
         // Check diagonally.
         char middle = this._board[this.posToIndex(1, 1)];
